@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Clock/Clock.unity
+- path: Assets/Fractal/Fractal.unity
   isLoaded: 1
   isActive: 1
