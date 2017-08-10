@@ -4,7 +4,6 @@
 	{
 		_Color("Main Color", Color) = (1,1,1,1)
 		_MainTex("Main Texture", 2D) = "white"{}
-		_NormalTex("Normal Map", 2D) = "white"{}
 		_LightTex("Light Texture", 2D) = "white"{}
 		_MaskTex("Mask Texture", 2D) = "white"{}
 		_Thickness("Light Thickness", float) = 1
@@ -14,7 +13,7 @@
 
 	SubShader 
 	{
-		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent"}
+		//Tags{ "Queue" = "Transparent" "RenderType" = "Transparent"}
 
 		LOD 100	//shader level of detail. [https://docs.unity3d.com/Manual/SL-ShaderLOD.html]
 
@@ -27,12 +26,12 @@
 
 			#pragma vertex vert
 			#pragma fragment frag
+			//#pragma multi_compile_fog
 			#include "UnityCG.cginc"
 
 			sampler2D _MainTex;
 			sampler2D _LightTex;
 			sampler2D _MaskTex;
-			sampler2D _NormalTex;	//implement this
 			float4 _MainTex_ST;
 			float4 _Color;
 			float _Thickness;
@@ -42,6 +41,7 @@
 			struct v2f{
 				float2 uv : TEXCOORD0;
 				float4 pos : SV_POSITION;
+				//UNITY_FOG_COORDS(1)
 			};
 
 			v2f vert(appdata_full i)
@@ -49,6 +49,7 @@
 				v2f o;
 				o.uv = TRANSFORM_TEX(i.texcoord, _MainTex);	//unity built-in method to implement tiling and offset, _MainTex_ST is used inside
 				o.pos = UnityObjectToClipPos(i.vertex);
+				//UNITY_TRANSFER_FOG(o, o.pos);
 				return o;
 			}
 
@@ -60,10 +61,10 @@
 				uv.x += _Time.y * _Speed;
 				uv.y += _Time.y * _Speed;
 				float LightAlphaOnThisPixel = tex2D(_LightTex, uv).a;
-				float MaskAlphaOnThisPixel = tex2D(_MaskTex, uv).a;
+				float MaskAlphaOnThisPixel = tex2D(_MaskTex, IN.uv).a;	//pick from IN.uv not varified uv
 
 				col = col + LightAlphaOnThisPixel * MaskAlphaOnThisPixel * _Lightness;	//only the pixel inside light flow shape & inside mask will be highlighted
-
+				//UNITY_APPLY_FOG(IN.fogCoord, col);
 				return col;
 			}
 

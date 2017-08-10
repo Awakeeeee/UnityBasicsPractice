@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/LightFlowMaterial/LightFlowOnMesh.unity
+- path: Assets/FOV/FOVScene.unity
   isLoaded: 1
   isActive: 1
