@@ -22,7 +22,7 @@ public class FieldOfViewEditor : Editor
 		Handles.DrawLine(fov.transform.position, fov.transform.position + fov.DirectionFromAngle(-fov.viewAngle / 2f, false) * fov.viewRadius);
 		Handles.DrawLine(fov.transform.position, fov.transform.position + fov.DirectionFromAngle(fov.viewAngle / 2f, false) * fov.viewRadius);
 
-		Handles.color = Color.black;
+		Handles.color = Color.red;
 		if(fov.targetsInView != null)
 		{
 			foreach(Transform t in fov.targetsInView)

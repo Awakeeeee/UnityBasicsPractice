@@ -53,3 +53,5 @@ E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEditor.i
 E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp-Editor.csprojResolveAssemblyReference.cache
 E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp-Editor.dll
 E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp-Editor.pdb
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\SyntaxTree.VisualStudio.Unity.Bridge.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\SyntaxTree.VisualStudio.Unity.Messaging.dll

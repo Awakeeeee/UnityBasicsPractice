@@ -23,7 +23,7 @@ public class Controller : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		Vector3 velocity = new Vector3(-Input.GetAxis("Vertical"), 0f, Input.GetAxis("Horizontal")).normalized * speed * Time.deltaTime;
+		Vector3 velocity = new Vector3(-Input.GetAxisRaw("Vertical"), 0f, Input.GetAxisRaw("Horizontal")).normalized * speed * Time.deltaTime;
 		rb.MovePosition(transform.position + velocity);
 	}
 }
