@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/FOV/FOVScene.unity
+- path: Assets/ProceduralCave/ProceduralCaveScene.unity
   isLoaded: 1
   isActive: 1
