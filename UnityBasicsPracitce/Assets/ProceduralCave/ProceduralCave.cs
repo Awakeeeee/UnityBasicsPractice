@@ -117,6 +117,7 @@ public class ProceduralCave : MonoBehaviour
 
 	void OnDrawGizmos()
 	{
+//---------Display method 1. just use map data----------------
 //		if(cave == null)
 //			return;
 //

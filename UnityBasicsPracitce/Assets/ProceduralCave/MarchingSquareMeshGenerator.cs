@@ -9,10 +9,83 @@ public class MarchingSquareMeshGenerator : MonoBehaviour
 	public void GenerateMesh(int[,] mapData, float size)
 	{
 		squareGrid = new SquareGrid(mapData, size);
+
+		int lx = squareGrid.sGrid.GetLength(0);
+		int ly = squareGrid.sGrid.GetLength(1);
+
+		for(int x = 0; x < lx; x++)
+		{
+			for(int y = 0; y < ly; y++)
+			{
+				ConfigureTriangles(squareGrid.sGrid[x,y]);
+			}
+		}
+	}
+
+	void ConfigureTriangles(Square s)
+	{
+		switch(s.configuration)
+		{
+		case 0:
+			break;
+		case 1:
+			ConnectMeshPoint(s.n_midBottom, s.cn_bottomLeft, s.n_midLeft);
+			break;
+		case 2:
+			ConnectMeshPoint(s.n_midRight, s.cn_bottomRight, s.n_midBottom);
+			break;
+		case 3:
+			ConnectMeshPoint(s.n_midRight, s.cn_bottomRight, s.cn_bottomLeft, s.n_midLeft);
+			break;
+		case 4:
+			ConnectMeshPoint(s.n_midTop, s.cn_topRight, s.n_midRight);
+			break;
+		case 5:
+			ConnectMeshPoint(s.n_midTop, s.cn_topRight, s.n_midRight, s.n_midBottom, s.cn_bottomLeft, s.n_midLeft);
+			break;
+		case 6:
+			ConnectMeshPoint(s.n_midTop, s.cn_topRight, s.cn_bottomRight, s.n_midBottom);
+			break;
+		case 7:
+			ConnectMeshPoint(s.n_midTop, s.cn_topRight, s.cn_bottomRight, s.cn_bottomLeft, s.n_midLeft);
+			break;
+		case 8:
+			ConnectMeshPoint(s.cn_topLeft, s.n_midTop, s.n_midLeft);
+			break;
+		case 9:
+			ConnectMeshPoint(s.cn_topLeft, s.n_midTop, s.n_midBottom, s.cn_bottomLeft);
+			break;
+		case 10:
+			ConnectMeshPoint(s.cn_topLeft, s.n_midTop, s.n_midRight, s.cn_bottomRight, s.n_midBottom, s.n_midLeft);
+			break;
+		case 11:
+			ConnectMeshPoint(s.cn_topLeft, s.n_midTop, s.n_midRight, s.cn_bottomRight, s.cn_bottomLeft);
+			break;
+		case 12:
+			ConnectMeshPoint(s.cn_topLeft, s.cn_topRight, s.n_midRight, s.n_midLeft);
+			break;
+		case 13:
+			ConnectMeshPoint(s.cn_topLeft, s.cn_topRight, s.n_midRight, s.n_midBottom, s.cn_bottomLeft);
+			break;
+		case 14:
+			ConnectMeshPoint(s.cn_topLeft, s.cn_topRight, s.cn_bottomRight, s.n_midBottom, s.n_midLeft);
+			break;
+		case 15:
+			ConnectMeshPoint(s.cn_topLeft, s.cn_topRight, s.cn_bottomRight, s.cn_bottomLeft);
+			break;
+		default:
+			break;
+		}
+	}
+
+	void ConnectMeshPoint(params Node[] activePoints)
+	{
+		
 	}
 
 	void OnDrawGizmos()
 	{
+		//-----------------Display method 2. Draw the square and its nodes-------------------
 		if(squareGrid == null)
 			return;
 
@@ -88,6 +161,7 @@ public class Square
 	public Node n_midTop, n_midRight, n_midBottom, n_midLeft;
 	public Vector3 centerPos;
 	public float size;
+	public int configuration;	//the decimal number out of binary combination. eg 1010 = 10
 
 	public Square(float _size, ControlNode _tl, ControlNode _tr, ControlNode _br, ControlNode _bl)
 	{
@@ -104,6 +178,17 @@ public class Square
 		n_midLeft = cn_bottomLeft.top;
 
 		centerPos = new Vector3(cn_bottomLeft.pos.x + size/2f, cn_bottomLeft.pos.y, cn_bottomLeft.pos.z + size/2f);
+
+		configuration = 0;
+
+		if(cn_topLeft.isOn)
+			configuration += 8;	//1000
+		if(cn_topRight.isOn)
+			configuration += 4; //0100
+		if(cn_bottomRight.isOn)
+			configuration += 2; //0010
+		if(cn_bottomLeft.isOn)
+			configuration += 1;	//0001
 	}
 }
 
