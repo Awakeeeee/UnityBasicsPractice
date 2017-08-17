@@ -6,9 +6,23 @@ public class MarchingSquareMeshGenerator : MonoBehaviour
 {
 	SquareGrid squareGrid;
 
+	List<Vector3> vertices;
+	List<int> triangles;
+
+	MeshFilter meshFilter;
+	Mesh marchingSqaureMesh;
+
+	void Awake()
+	{
+		meshFilter = GetComponent<MeshFilter>();
+	}
+
+	//--------------------------Display method 3. By Mesh.------------------------------
 	public void GenerateMesh(int[,] mapData, float size)
 	{
 		squareGrid = new SquareGrid(mapData, size);
+		vertices = new List<Vector3>();
+		triangles = new List<int>();
 
 		int lx = squareGrid.sGrid.GetLength(0);
 		int ly = squareGrid.sGrid.GetLength(1);
@@ -20,6 +34,19 @@ public class MarchingSquareMeshGenerator : MonoBehaviour
 				ConfigureTriangles(squareGrid.sGrid[x,y]);
 			}
 		}
+
+		SetupMesh();
+	}
+
+	void SetupMesh()
+	{
+		marchingSqaureMesh = new Mesh();
+		marchingSqaureMesh.name = "MarchingSquareMesh";
+		marchingSqaureMesh.vertices = vertices.ToArray();
+		marchingSqaureMesh.triangles = triangles.ToArray();
+		marchingSqaureMesh.RecalculateNormals();
+
+		meshFilter.mesh = marchingSqaureMesh;
 	}
 
 	void ConfigureTriangles(Square s)
@@ -29,110 +56,140 @@ public class MarchingSquareMeshGenerator : MonoBehaviour
 		case 0:
 			break;
 		case 1:
-			ConnectMeshPoint(s.n_midBottom, s.cn_bottomLeft, s.n_midLeft);
+			ConnectMesh(s.n_midBottom, s.cn_bottomLeft, s.n_midLeft);
 			break;
 		case 2:
-			ConnectMeshPoint(s.n_midRight, s.cn_bottomRight, s.n_midBottom);
+			ConnectMesh(s.n_midRight, s.cn_bottomRight, s.n_midBottom);
 			break;
 		case 3:
-			ConnectMeshPoint(s.n_midRight, s.cn_bottomRight, s.cn_bottomLeft, s.n_midLeft);
+			ConnectMesh(s.n_midRight, s.cn_bottomRight, s.cn_bottomLeft, s.n_midLeft);
 			break;
 		case 4:
-			ConnectMeshPoint(s.n_midTop, s.cn_topRight, s.n_midRight);
+			ConnectMesh(s.n_midTop, s.cn_topRight, s.n_midRight);
 			break;
 		case 5:
-			ConnectMeshPoint(s.n_midTop, s.cn_topRight, s.n_midRight, s.n_midBottom, s.cn_bottomLeft, s.n_midLeft);
+			ConnectMesh(s.n_midTop, s.cn_topRight, s.n_midRight, s.n_midBottom, s.cn_bottomLeft, s.n_midLeft);
 			break;
 		case 6:
-			ConnectMeshPoint(s.n_midTop, s.cn_topRight, s.cn_bottomRight, s.n_midBottom);
+			ConnectMesh(s.n_midTop, s.cn_topRight, s.cn_bottomRight, s.n_midBottom);
 			break;
 		case 7:
-			ConnectMeshPoint(s.n_midTop, s.cn_topRight, s.cn_bottomRight, s.cn_bottomLeft, s.n_midLeft);
+			ConnectMesh(s.n_midTop, s.cn_topRight, s.cn_bottomRight, s.cn_bottomLeft, s.n_midLeft);
 			break;
 		case 8:
-			ConnectMeshPoint(s.cn_topLeft, s.n_midTop, s.n_midLeft);
+			ConnectMesh(s.cn_topLeft, s.n_midTop, s.n_midLeft);
 			break;
 		case 9:
-			ConnectMeshPoint(s.cn_topLeft, s.n_midTop, s.n_midBottom, s.cn_bottomLeft);
+			ConnectMesh(s.cn_topLeft, s.n_midTop, s.n_midBottom, s.cn_bottomLeft);
 			break;
 		case 10:
-			ConnectMeshPoint(s.cn_topLeft, s.n_midTop, s.n_midRight, s.cn_bottomRight, s.n_midBottom, s.n_midLeft);
+			ConnectMesh(s.cn_topLeft, s.n_midTop, s.n_midRight, s.cn_bottomRight, s.n_midBottom, s.n_midLeft);
 			break;
 		case 11:
-			ConnectMeshPoint(s.cn_topLeft, s.n_midTop, s.n_midRight, s.cn_bottomRight, s.cn_bottomLeft);
+			ConnectMesh(s.cn_topLeft, s.n_midTop, s.n_midRight, s.cn_bottomRight, s.cn_bottomLeft);
 			break;
 		case 12:
-			ConnectMeshPoint(s.cn_topLeft, s.cn_topRight, s.n_midRight, s.n_midLeft);
+			ConnectMesh(s.cn_topLeft, s.cn_topRight, s.n_midRight, s.n_midLeft);
 			break;
 		case 13:
-			ConnectMeshPoint(s.cn_topLeft, s.cn_topRight, s.n_midRight, s.n_midBottom, s.cn_bottomLeft);
+			ConnectMesh(s.cn_topLeft, s.cn_topRight, s.n_midRight, s.n_midBottom, s.cn_bottomLeft);
 			break;
 		case 14:
-			ConnectMeshPoint(s.cn_topLeft, s.cn_topRight, s.cn_bottomRight, s.n_midBottom, s.n_midLeft);
+			ConnectMesh(s.cn_topLeft, s.cn_topRight, s.cn_bottomRight, s.n_midBottom, s.n_midLeft);
 			break;
 		case 15:
-			ConnectMeshPoint(s.cn_topLeft, s.cn_topRight, s.cn_bottomRight, s.cn_bottomLeft);
+			ConnectMesh(s.cn_topLeft, s.cn_topRight, s.cn_bottomRight, s.cn_bottomLeft);
 			break;
 		default:
 			break;
 		}
 	}
 
-	void ConnectMeshPoint(params Node[] activePoints)
+	void ConnectMesh(params Node[] nodes)
 	{
-		
+		AddVertices(nodes);
+
+		if(nodes.Length >= 3)	//everyone is
+			AddTriangle(nodes[0], nodes[1], nodes[2]);
+		if(nodes.Length >= 4)	//example 6
+			AddTriangle(nodes[0], nodes[2], nodes[3]);
+		if(nodes.Length >= 5)	//9
+			AddTriangle(nodes[0], nodes[3], nodes[4]);
+		if(nodes.Length >= 6)	//10 the most complecated
+			AddTriangle(nodes[0], nodes[4], nodes[5]);
+	}
+
+	void AddVertices(Node[] nodes)
+	{
+		for(int i = 0; i < nodes.Length; i++)
+		{
+			if(nodes[i].id == -1)	//no duplication
+			{
+				nodes[i].id = vertices.Count;
+				vertices.Add(nodes[i].pos);
+			}
+		}
+	}
+
+	void AddTriangle(Node a, Node b, Node c)
+	{
+		triangles.Add(a.id);
+		triangles.Add(b.id);
+		triangles.Add(c.id);
 	}
 
 	void OnDrawGizmos()
 	{
 		//-----------------Display method 2. Draw the square and its nodes-------------------
-		if(squareGrid == null)
-			return;
-
-		int lx = squareGrid.sGrid.GetLength(0);
-		int ly = squareGrid.sGrid.GetLength(1);
-
-		for(int x = 0; x < lx; x++)
-		{
-			for(int y = 0; y < ly; y++)
-			{
-				//control nodes
-				Gizmos.color = squareGrid.sGrid[x,y].cn_bottomLeft.isOn ? Color.black : Color.white;
-				Gizmos.DrawCube(squareGrid.sGrid[x,y].cn_bottomLeft.pos, Vector3.one * 0.5f);
-
-				//normal nodes
-				Gizmos.color = Color.gray;
-				Gizmos.DrawCube(squareGrid.sGrid[x,y].n_midBottom.pos, Vector3.one * 0.3f);
-				Gizmos.DrawCube(squareGrid.sGrid[x,y].n_midLeft.pos, Vector3.one * 0.3f);
-
-				//edge case
-				if(x == lx - 1 || y == ly - 1)
-				{
-					Gizmos.color = squareGrid.sGrid[x,y].cn_bottomRight.isOn ? Color.black : Color.white;
-					Gizmos.DrawCube(squareGrid.sGrid[x,y].cn_bottomRight.pos, Vector3.one * 0.5f);
-
-					Gizmos.color = squareGrid.sGrid[x,y].cn_topRight.isOn ? Color.black : Color.white;
-					Gizmos.DrawCube(squareGrid.sGrid[x,y].cn_topRight.pos, Vector3.one * 0.5f);
-
-					Gizmos.color = squareGrid.sGrid[x,y].cn_topLeft.isOn ? Color.black : Color.white;
-					Gizmos.DrawCube(squareGrid.sGrid[x,y].cn_topLeft.pos, Vector3.one * 0.5f);
-
-					Gizmos.color = Color.gray;
-					Gizmos.DrawCube(squareGrid.sGrid[x,y].n_midRight.pos, Vector3.one * 0.3f);
-					Gizmos.DrawCube(squareGrid.sGrid[x,y].n_midTop.pos, Vector3.one * 0.3f);
-				}
-			}
-		}
+//		if(squareGrid == null)
+//			return;
+//
+//		int lx = squareGrid.sGrid.GetLength(0);
+//		int ly = squareGrid.sGrid.GetLength(1);
+//
+//		for(int x = 0; x < lx; x++)
+//		{
+//			for(int y = 0; y < ly; y++)
+//			{
+//				//control nodes
+//				Gizmos.color = squareGrid.sGrid[x,y].cn_bottomLeft.isOn ? Color.black : Color.white;
+//				Gizmos.DrawCube(squareGrid.sGrid[x,y].cn_bottomLeft.pos, Vector3.one * 0.5f);
+//
+//				//normal nodes
+//				Gizmos.color = Color.gray;
+//				Gizmos.DrawCube(squareGrid.sGrid[x,y].n_midBottom.pos, Vector3.one * 0.3f);
+//				Gizmos.DrawCube(squareGrid.sGrid[x,y].n_midLeft.pos, Vector3.one * 0.3f);
+//
+//				//edge case
+//				if(x == lx - 1 || y == ly - 1)
+//				{
+//					Gizmos.color = squareGrid.sGrid[x,y].cn_bottomRight.isOn ? Color.black : Color.white;
+//					Gizmos.DrawCube(squareGrid.sGrid[x,y].cn_bottomRight.pos, Vector3.one * 0.5f);
+//
+//					Gizmos.color = squareGrid.sGrid[x,y].cn_topRight.isOn ? Color.black : Color.white;
+//					Gizmos.DrawCube(squareGrid.sGrid[x,y].cn_topRight.pos, Vector3.one * 0.5f);
+//
+//					Gizmos.color = squareGrid.sGrid[x,y].cn_topLeft.isOn ? Color.black : Color.white;
+//					Gizmos.DrawCube(squareGrid.sGrid[x,y].cn_topLeft.pos, Vector3.one * 0.5f);
+//
+//					Gizmos.color = Color.gray;
+//					Gizmos.DrawCube(squareGrid.sGrid[x,y].n_midRight.pos, Vector3.one * 0.3f);
+//					Gizmos.DrawCube(squareGrid.sGrid[x,y].n_midTop.pos, Vector3.one * 0.3f);
+//				}
+//			}
+//		}
 	}
 }
 
 public class Node
 {
 	public Vector3 pos;
+	public int id = -1;
 
 	public Node(Vector3 _pos)
 	{
 		pos = _pos;
+		id = -1;
 	}
 }
 
