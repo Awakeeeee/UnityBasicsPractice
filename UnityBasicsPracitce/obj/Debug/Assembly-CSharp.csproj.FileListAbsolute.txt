@@ -1,34 +1,3 @@
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Assembly-CSharp.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Assembly-CSharp.pdb
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\nunit.framework.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEditor.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.Analytics.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.HoloLens.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.Networking.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.TestRunner.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.UI.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.VR.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Mono.Cecil.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Unity.SerializationLogic.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Unity.DataContract.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\ICSharpCode.NRefactory.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Unity.UNetWeaver.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Unity.CecilTools.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Mono.Cecil.Pdb.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Mono.Cecil.Mdb.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.xml
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEditor.xml
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.UI.xml
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.Networking.xml
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.TestRunner.xml
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\nunit.framework.xml
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.Analytics.xml
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.HoloLens.xml
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.VR.xml
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp.dll
-E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp.pdb
 D:\GitHub Repos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
 D:\GitHub Repos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp.dll
 D:\GitHub Repos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Assembly-CSharp.dll
@@ -61,3 +30,35 @@ D:\GitHub Repos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngi
 D:\GitHub Repos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.HoloLens.xml
 D:\GitHub Repos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.VR.xml
 D:\GitHub Repos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp.pdb
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Assembly-CSharp.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Assembly-CSharp.pdb
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Facebook.Unity.Settings.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\nunit.framework.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEditor.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.Analytics.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.HoloLens.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.Networking.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.TestRunner.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.UI.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.VR.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Mono.Cecil.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Unity.SerializationLogic.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Unity.DataContract.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\ICSharpCode.NRefactory.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Unity.UNetWeaver.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Unity.CecilTools.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Mono.Cecil.Pdb.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\Mono.Cecil.Mdb.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.xml
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEditor.xml
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.UI.xml
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.Networking.xml
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.TestRunner.xml
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\nunit.framework.xml
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.Analytics.xml
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.HoloLens.xml
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\Temp\bin\Debug\UnityEngine.VR.xml
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp.dll
+E:\GitRepos\UnityBasicsPractice\UnityBasicsPracitce\obj\Debug\Assembly-CSharp.pdb

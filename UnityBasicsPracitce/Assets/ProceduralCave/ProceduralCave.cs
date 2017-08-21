@@ -6,6 +6,7 @@ public class ProceduralCave : MonoBehaviour
 {
 	public int width;
 	public int height;
+	public int outerWallThickness = 5;
 	public bool autoRandomSeed;
 	public string seed;
 	[Range(0, 100)]public int fillPercentage;
@@ -39,10 +40,26 @@ public class ProceduralCave : MonoBehaviour
 			SmoothCave();
 		}
 
-		//draw mesh
+		//more thickness on outline wall
+		int[,] thickCave = new int[width + outerWallThickness * 2, height + outerWallThickness * 2];
+		for(int x = 0; x < thickCave.GetLength(0); x++)
+		{
+			for(int y = 0; y < thickCave.GetLength(1); y++)
+			{
+				if(x < outerWallThickness || x >= width || y < outerWallThickness || y >= height)
+				{
+					thickCave[x,y] = 1;
+				}else{
+					thickCave[x,y] = cave[x - outerWallThickness, y - outerWallThickness];
+				}
+			}
+		}
+
+		//draw the crazy mesh
 		if(msGenerator != null)
 		{
-			msGenerator.GenerateMesh(cave, 1);
+			//msGenerator.GenerateMesh(cave, 1);
+			msGenerator.GenerateMesh(thickCave, 1);
 		}
 	}
 
