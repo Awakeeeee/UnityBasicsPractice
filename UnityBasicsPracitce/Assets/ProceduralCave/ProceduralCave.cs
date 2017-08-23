@@ -12,6 +12,8 @@ public class ProceduralCave : MonoBehaviour
 	[Header("Randomize")]
 	public bool autoRandomSeed;
 	public string seed;
+	public int basicMapSmoothTime;
+	public int removeRegionSmoothTime = 1;
 	[Range(0, 100)]public int fillPercentage;
 
 	[Header("Region")]
@@ -42,7 +44,7 @@ public class ProceduralCave : MonoBehaviour
 		RandomlyFillCave();
 
 		//smooth the cave several times
-		for(int i = 0; i < 5; i++)
+		for(int i = 0; i < basicMapSmoothTime; i++)
 		{
 			SmoothCave();
 		}
@@ -54,7 +56,7 @@ public class ProceduralCave : MonoBehaviour
 		{
 			for(int y = 0; y < thickCave.GetLength(1); y++)
 			{
-				if(x < outerWallThickness || x >= width || y < outerWallThickness || y >= height)
+				if(x < outerWallThickness || x >= width + outerWallThickness || y < outerWallThickness || y >= height + outerWallThickness)	//note x>=width + outer NOT x>=width. I made mistake here
 				{
 					thickCave[x,y] = 1;
 				}else{
@@ -219,37 +221,131 @@ public class ProceduralCave : MonoBehaviour
 		return regions;
 	}
 
-	///Find the 'small' wll regions and remove them from map
+	///Find the 'small' regions and remove them from map. Find room regions and connect them.
 	void SmoothRegion()
 	{
-		List<List<Coord>> regions = FindAllRegions();
+		List<List<Coord>> regions = new List<List<Coord>>();
+		List<Room> allRooms = new List<Room>();
 
-		for(int i = 0; i < regions.Count; i++)
+		//remove small regions
+		for(int s = 0; s < removeRegionSmoothTime; s++)
 		{
-			List<Coord> checkRegion = regions[i];
+			regions = FindAllRegions();
 
-			if(checkRegion.Count < smallRegionThreshold)	//remove such small region
+			for(int i = 0; i < regions.Count; i++)
 			{
-				//decide type
-				int regionType = cave[checkRegion[0].x, checkRegion[0].y];
-				int targetType = -1;
-				if(regionType == 1)
-				{
-					targetType = 0;
-				}else if(regionType == 0)
-				{
-					targetType = 1;
-				}else{
-					Debug.LogError("Unexpected region tile type.");
-				}
+				List<Coord> checkRegion = regions[i];
 
-				//change
-				for(int c = 0; c < checkRegion.Count; c++)
+				if(checkRegion.Count < smallRegionThreshold)
 				{
-					cave[checkRegion[c].x, checkRegion[c].y] = targetType;
+					//decide type
+					int regionType = cave[checkRegion[0].x, checkRegion[0].y];
+					int targetType = -1;
+					if(regionType == 1)
+					{
+						targetType = 0;
+					}else if(regionType == 0)
+					{
+						targetType = 1;
+					}else{
+						Debug.LogError("Unexpected region tile type.");
+					}
+
+					//remove(turn 1to0 and 0to1)
+					for(int c = 0; c < checkRegion.Count; c++)
+					{
+						cave[checkRegion[c].x, checkRegion[c].y] = targetType;
+					}
 				}
 			}
 		}
+
+		//find room and connect them
+		for(int i = 0; i < regions.Count; i++)
+		{
+			List<Coord> checkRegion = regions[i];
+			if(checkRegion.Count >= smallRegionThreshold)
+			{
+				if(cave[checkRegion[0].x, checkRegion[0].y] == 0)	//this is room region
+				{
+					Room room = new Room(checkRegion, cave);
+					allRooms.Add(room);
+				}
+			}
+		}
+		ConnectRoomRegions(allRooms);
+	}
+
+	//Loop through rooms, for each room, find its Closest room and make a passway to that room
+	void ConnectRoomRegions(List<Room> allRooms)
+	{
+		int passwayDist = 0;
+		bool possiblePasswayFound = false;
+		Coord passwayCoord1 = new Coord();
+		Coord passwayCoord2 = new Coord();
+		Room passwayRoom1 = new Room();
+		Room passwayRoom2 = new Room();
+
+		//pick 2 rooms to check
+		for(int r1 = 0; r1 < allRooms.Count; r1++)
+		{
+			for(int r2 = 0; r2 < allRooms.Count; r2++)
+			{
+				if(r1 == r2)
+					continue;
+
+				Room room1 = allRooms[r1];
+				Room room2 = allRooms[r2];
+				if(room1.IsConnectedWith(room2))
+				{
+					possiblePasswayFound = false;
+					break;
+				}
+
+				//pick 2 coordinates from 2 rooms
+				for(int c1 = 0; c1 < room1.roomOutline.Count; c1++)
+				{
+					for(int c2 = 0; c2 < room2.roomOutline.Count; c2++)
+					{
+						Coord coord1 = room1.roomOutline[c1];
+						Coord coord2 = room2.roomOutline[c2];
+						int distance = (int)(Mathf.Pow(coord1.x - coord2.x, 2) + Mathf.Pow(coord1.y - coord2.y, 2));
+
+						if(distance < passwayDist || !possiblePasswayFound)
+						{
+							passwayDist = distance;
+							possiblePasswayFound = true;
+
+							passwayCoord1 = coord1;
+							passwayCoord2 = coord2;
+							passwayRoom1 = room1;
+							passwayRoom2 = room2;
+						}
+					}
+				}
+			}
+
+			//for a room1, if it finds its CLOEST ROOM and finds A PASSWAY to that, make that passway
+			if(possiblePasswayFound)
+			{
+				MakePassway(passwayRoom1, passwayRoom2, passwayCoord1, passwayCoord2);
+				possiblePasswayFound = false;	//rest for next search
+			}
+		}
+	}
+
+	void MakePassway(Room r1, Room r2, Coord c1, Coord c2)
+	{
+		Room.MarkTwoRoomsConnected(r1, r2);
+		Vector3 pos1 = CoordToWorldPosition(c1, 0.5f);
+		Vector3 pos2 = CoordToWorldPosition(c2, 0.5f);
+		Debug.DrawLine(pos1, pos2, Color.yellow, 100f);
+	}
+
+	///return the world position of this coordinate when Size = 1
+	Vector3 CoordToWorldPosition(Coord c, float y = 0.5f)
+	{
+		return new Vector3(-width / 2f + c.x, y, -height / 2f + c.y);	//TODO should I +0.5f on X and Z?
 	}
 
 	void OnDrawGizmos()
@@ -279,5 +375,52 @@ public struct Coord
 	{
 		x = _x;
 		y = _y;
+	}
+}
+
+/// A region of passway tiles(0) is a room
+public class Room
+{
+	public List<Coord> roomRegion;
+	public List<Coord> roomOutline;
+	public List<Room> connectedRooms;	//if 2 rooms has a passway between them, they are connected
+
+	public Room()
+	{}
+
+	public Room(List<Coord> region, int[,] map)
+	{
+		roomRegion = region;
+		roomOutline = new List<Coord>();
+		connectedRooms = new List<Room>();
+
+		for(int i = 0; i < roomRegion.Count; i++)
+		{
+			Coord checkCoord = roomRegion[i];
+			//map points in a room are all 0, to build an outline point list, I must check the surrounding point of each room point
+			for(int x = checkCoord.x - 1; x <= checkCoord.x + 1; x++)
+			{
+				for(int y = checkCoord.y - 1; y <= checkCoord.y + 1; y++)
+				{
+					if(x == checkCoord.x || y == checkCoord.y)	//dont check diagonal coord
+					{
+						if(map[x, y] == 1)
+							roomOutline.Add(checkCoord);
+					}
+				}
+			}
+		}
+	}
+
+	//Check if this room is connected with another room
+	public bool IsConnectedWith(Room other)
+	{
+		return this.connectedRooms.Contains(other);
+	}
+
+	public static void MarkTwoRoomsConnected(Room a, Room b)
+	{
+		a.connectedRooms.Add(b);
+		b.connectedRooms.Add(a);
 	}
 }
