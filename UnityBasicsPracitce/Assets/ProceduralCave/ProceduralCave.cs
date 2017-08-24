@@ -273,11 +273,11 @@ public class ProceduralCave : MonoBehaviour
 				}
 			}
 		}
-		ConnectRoomRegions(allRooms);
+		ConnectClosestRooms(allRooms);
 	}
 
 	//Loop through rooms, for each room, find its Closest room and make a passway to that room
-	void ConnectRoomRegions(List<Room> allRooms)
+	void ConnectClosestRooms(List<Room> allRooms)
 	{
 		int passwayDist = 0;
 		bool possiblePasswayFound = false;
@@ -286,19 +286,25 @@ public class ProceduralCave : MonoBehaviour
 		Room passwayRoom1 = new Room();
 		Room passwayRoom2 = new Room();
 
+		allRooms.Sort();	//List.Sort() uses IComparable.CompareTo()
+		Room mainRoom = allRooms[allRooms.Count - 1];
+		mainRoom.isMainRoom = true;	//find main room is prepared for ConnectInaccessibleRoomsToMainRoom()
+		mainRoom.isAccessibleToMainRoom = true;
+		Debug.DrawLine(CoordToWorldPosition(mainRoom.roomRegion[0], 1f), CoordToWorldPosition(mainRoom.roomRegion[1], 1f), Color.cyan, 100f);	//distinguish main room
+
 		//pick 2 rooms to check
 		for(int r1 = 0; r1 < allRooms.Count; r1++)
 		{
 			for(int r2 = 0; r2 < allRooms.Count; r2++)
 			{
-				if(r1 == r2)
+				if(r1 == r2)	//dont check itself to itself
 					continue;
 
 				Room room1 = allRooms[r1];
 				Room room2 = allRooms[r2];
-				if(room1.IsConnectedWith(room2))
+
+				if(room1.connectedRooms.Count > 0)	//meaning room1 has already got a passway, so break - check next room1 (think that they are all finally serve room1)
 				{
-					possiblePasswayFound = false;
 					break;
 				}
 
@@ -331,6 +337,78 @@ public class ProceduralCave : MonoBehaviour
 				MakePassway(passwayRoom1, passwayRoom2, passwayCoord1, passwayCoord2);
 				possiblePasswayFound = false;	//rest for next search
 			}
+		}
+
+		//after connect closest rooms, several nearby rooms may form 'community', communities may not connect to each other, this method adds extra connections to ensure overal main-room-accessible
+		ConnectInaccessibleRoomsToMainRoom(allRooms);
+	}
+
+	///Recursively find main-room-accessible rooms list and inaccessible room list. Each iteration find the closest ia-room and a-room, and connect them.
+	///Recursively call itself until the inaccessible room list counts 0.
+	void ConnectInaccessibleRoomsToMainRoom(List<Room> allRooms)
+	{
+		int passwayDist = 0;
+		bool possiblePasswayFound = false;
+		Coord passwayCoordOnInaccessibleRoom = new Coord();
+		Coord passwayCoordOnAccessibleRoom = new Coord();
+		Room bestInaccessibleRoom = new Room();
+		Room bestAccessibleRoom = new Room();
+
+		//The two lists are updated in every iteration of this method itself, when inaccessibleRooms.Count = 0, the recursive call ends
+		List<Room> accessibleRooms = new List<Room>();
+		List<Room> inaccessibleRooms = new List<Room>();
+		for(int i = 0; i < allRooms.Count; i++)
+		{
+			if(allRooms[i].isAccessibleToMainRoom)
+			{
+				accessibleRooms.Add(allRooms[i]);
+			}else{
+				inaccessibleRooms.Add(allRooms[i]);
+			}
+		}
+
+		//Loop through every ia-rooms and a-rooms, to find a shortest path from an a-room, to an ia-room
+		for(int ia = 0; ia < inaccessibleRooms.Count; ia++)
+		{
+			for(int a = 0; a < accessibleRooms.Count; a++)
+			{
+				if(ia == a)
+					continue;
+				
+				Room roomIA = inaccessibleRooms[ia];
+				Room roomA = accessibleRooms[a];
+
+				if(roomIA.isAccessibleToMainRoom)
+					continue;
+
+				for(int c1 = 0; c1 < roomIA.roomOutline.Count; c1++)
+				{
+					for(int c2 = 0; c2 < roomA.roomOutline.Count; c2++)
+					{
+						Coord coordIA = roomIA.roomOutline[c1];
+						Coord coordA = roomA.roomOutline[c2];
+						int distance = (int)(Mathf.Pow(coordIA.x - coordA.x, 2) + Mathf.Pow(coordIA.y - coordA.y, 2));
+
+						if(distance < passwayDist || !possiblePasswayFound)
+						{
+							passwayDist = distance;
+							possiblePasswayFound = true;
+
+							passwayCoordOnInaccessibleRoom = coordIA;
+							passwayCoordOnAccessibleRoom = coordA;
+							bestInaccessibleRoom = roomIA;
+							bestAccessibleRoom = roomA;
+						}
+					}
+				}
+			}
+		}
+		//This is after both loops:
+		//Every time call this method, only ONE passway is made, then recall itself to make the next one
+		if(possiblePasswayFound)
+		{
+			MakePassway(bestInaccessibleRoom, bestAccessibleRoom, passwayCoordOnInaccessibleRoom, passwayCoordOnAccessibleRoom);
+			ConnectInaccessibleRoomsToMainRoom(allRooms);
 		}
 	}
 
@@ -379,11 +457,15 @@ public struct Coord
 }
 
 /// A region of passway tiles(0) is a room
-public class Room
+public class Room : System.IComparable<Room>
 {
 	public List<Coord> roomRegion;
 	public List<Coord> roomOutline;
 	public List<Room> connectedRooms;	//if 2 rooms has a passway between them, they are connected
+	public int roomSize;
+
+	public bool isMainRoom = false;	//main room is the biggest room
+	public bool isAccessibleToMainRoom = false;
 
 	public Room()
 	{}
@@ -393,6 +475,7 @@ public class Room
 		roomRegion = region;
 		roomOutline = new List<Coord>();
 		connectedRooms = new List<Room>();
+		roomSize = roomRegion.Count;
 
 		for(int i = 0; i < roomRegion.Count; i++)
 		{
@@ -420,7 +503,34 @@ public class Room
 
 	public static void MarkTwoRoomsConnected(Room a, Room b)
 	{
+		if(a.isAccessibleToMainRoom)
+		{
+			b.MarkRoomAccessibleToMainRom();
+		}else if(b.isAccessibleToMainRoom)
+		{
+			a.MarkRoomAccessibleToMainRom();
+		}
 		a.connectedRooms.Add(b);
 		b.connectedRooms.Add(a);
+	}
+
+	//Called when 2 rooms are connected
+	//If a room is accessible to main room, its connected room is also accessible to main room. 
+	//BUT note that connect means 'direct connect': 1 ct(connected to) 2, 2 ct 3, once 1 ct main, then 2 ct main, 3 NOT ct main 
+	public void MarkRoomAccessibleToMainRom()
+	{
+		if(!isAccessibleToMainRoom)
+		{
+			isAccessibleToMainRoom = true;
+			foreach(Room r in connectedRooms)
+			{
+				r.isAccessibleToMainRoom = true;
+			}
+		}
+	}
+
+	public int CompareTo(Room other)
+	{
+		return this.roomSize.CompareTo(other.roomSize);
 	}
 }
