@@ -19,6 +19,7 @@ public class ProceduralCave : MonoBehaviour
 	[Header("Region")]
 	[Tooltip("Any region that has tile less than this number will be removed - turn 0 to 1 or 1 to 0.")]
 	public int smallRegionThreshold = 10;
+	public int regionPasswayRadius = 1;
 
 	private int[,] cave;	//save 1 and 0, 1 indicates fill/wall, 0 indicates empty/passable
 	private MarchingSquareMeshGenerator msGenerator;
@@ -415,9 +416,118 @@ public class ProceduralCave : MonoBehaviour
 	void MakePassway(Room r1, Room r2, Coord c1, Coord c2)
 	{
 		Room.MarkTwoRoomsConnected(r1, r2);
-		Vector3 pos1 = CoordToWorldPosition(c1, 0.5f);
-		Vector3 pos2 = CoordToWorldPosition(c2, 0.5f);
-		Debug.DrawLine(pos1, pos2, Color.yellow, 100f);
+		List<Coord> passwayTiles = LineToTiles(c1, c2);
+		foreach(Coord tileCoord in passwayTiles)
+		{
+			//In my LineToTiles algorithm, I assume the left-bottom point represent the tile. 
+			//But in fact, a marching square is made of 4 points, so set the left-bottom point to 0 is not enough. I call OpenPasswwaySquare to set all points within a range to 0.
+			OpenPasswaySquare(tileCoord, regionPasswayRadius);
+		}
+
+		//debug lines
+		//Vector3 pos1 = CoordToWorldPosition(c1, 0.5f);
+		//Vector3 pos2 = CoordToWorldPosition(c2, 0.5f);
+		//Debug.DrawLine(pos1, pos2, Color.yellow, 100f);
+	}
+
+	//This is my understanding, it could be simplified I guess
+	List<Coord> LineToTiles(Coord start, Coord end)
+	{
+		List<Coord> tiles = new List<Coord>();
+		int x0 = start.x;
+		int y0 = start.y;
+		int xe = end.x;
+		int ye = end.y;
+		int xDist = Mathf.Abs(xe - x0);
+		int yDist = Mathf.Abs(ye - y0);
+
+		float k;	//gradient
+		float D;	//gradient accumulation
+		int loopStart;
+		int loopEnd;
+		int resultAxis;
+		int resultAxisStart;
+		int resultAxisAdd;
+		bool isResultAxisY;
+
+		if(xDist >= yDist)	//loop x++ and get y
+		{
+			k = (float)((float)yDist / (float)xDist);
+			loopStart = x0;
+			loopEnd = xe;
+			resultAxisStart = y0;
+			resultAxisAdd = ye > y0 ? 1 : -1;
+			isResultAxisY = true;
+		}else					//loop y++ and get x
+		{
+			k = (float)((float)xDist / (float)yDist);
+			loopStart = y0;
+			loopEnd = ye;
+			resultAxisStart = x0;
+			resultAxisAdd = xe > x0 ? 1 : -1;
+			isResultAxisY = false;
+		}
+
+		D = 0f;
+		resultAxis = resultAxisStart;
+
+		if(loopStart <= loopEnd)	//looper++
+		{
+			for(int i = loopStart; i < loopEnd; i++)
+			{
+				D += k;
+				if(D > 1f)
+				{
+					resultAxis += resultAxisAdd;
+					D = D - 1f;
+				}
+
+				if(isResultAxisY)
+				{
+					tiles.Add(new Coord(i, resultAxis));	
+				}else{
+					tiles.Add(new Coord(resultAxis, i));
+				}
+			}
+		}else								//looper--
+		{
+			for(int i = loopStart; i > loopEnd; i--)
+			{
+				D += k;
+				if(D > 1f)
+				{
+					resultAxis += resultAxisAdd;
+					D = D -1f;
+				}
+
+				if(isResultAxisY)
+				{
+					tiles.Add(new Coord(i, resultAxis));	
+				}else{
+					tiles.Add(new Coord(resultAxis, i));
+				}
+			}
+		}
+
+		return tiles;
+	}
+
+	void OpenPasswaySquare(Coord coord, int radius)
+	{
+		for(int x = -radius; x <= radius; x++)
+		{
+			for(int y = -radius; y <= radius; y++)
+			{
+				int dist = x*x + y*y;
+				if(dist <= radius * radius)	//in case radius > 1, all inner coords shhould be considered
+				{
+					if(IsInMapBound(coord.x + x, coord.y + y))
+					{
+						cave[coord.x + x, coord.y + y] = 0;
+					}
+				}
+			}
+		}
 	}
 
 	///return the world position of this coordinate when Size = 1
