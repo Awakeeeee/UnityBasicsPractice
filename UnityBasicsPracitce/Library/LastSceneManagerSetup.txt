@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/ProceduralCave/ProceduralCaveScene.unity
+- path: Assets/OutlineMaterial/OutlineMaterialScene.unity
   isLoaded: 1
   isActive: 1
